@@ -243,7 +243,7 @@ jobs:
       # Add ssh keys with fingerprint
       - add_ssh_keys:
             fingersprints:
-              - "f5:80:a4:fe:a2:6f:da:a8:1b:e0:6a:b7:63:3a:e9:06"
+              - "9c:1e:c5:bf:7b:25:f0:9c:8b:d3:b8:b6:2b:b5:2c:25"
       # attach workspace
       - attach_workspace:
           at: ~/
@@ -299,7 +299,7 @@ jobs:
       # Add ssh keys with fingerprint
       - add_ssh_keys:
             fingersprints:
-              - "f5:80:a4:fe:a2:6f:da:a8:1b:e0:6a:b7:63:3a:e9:06"
+              - "9c:1e:c5:bf:7b:25:f0:9c:8b:d3:b8:b6:2b:b5:2c:25"
       # attach workspace
       - attach_workspace:
           at: ~/
@@ -350,7 +350,7 @@ jobs:
       # Add ssh keys with fingerprint
       - add_ssh_keys:
             fingersprints:
-              - "f5:80:a4:fe:a2:6f:da:a8:1b:e0:6a:b7:63:3a:e9:06"
+              - "9c:1e:c5:bf:7b:25:f0:9c:8b:d3:b8:b6:2b:b5:2c:25"
       # attach workspace
       - attach_workspace:
           at: ~/
@@ -421,6 +421,7 @@ jobs:
       - checkout
       - install_awscli
       - install_nodejs
+
       - run:
           name: Update cloudfront distribution
           command: |
@@ -436,8 +437,13 @@ jobs:
 cleanup:
     docker:
       # Docker image here
+      - image: cimg/base:stable
     steps:
       # Checkout code from git
+      - checkout
+      - install_awscli
+      - install_nodejs
+
       - run:
           name: Get old stack workflow id
           command: |
@@ -450,9 +456,17 @@ cleanup:
       - run:
           name: Remove old stacks and files
           command: |
+            export STACKS=($(aws cloudformation list-stacks \
+                --query "StackSummaries[*].StackName" \
+                --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+            echo Stack names: "${STACKS[@]}"
+            export OldWorkflowID=$(curl --insecure https://kvdb.io/${KVDB_BUCKET}/old_workflow_id)
+            echo Old Workflow ID: $OldWorkflowID 
             if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
             then
-              # your code here
+              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+              aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+              aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
             fi
             
 

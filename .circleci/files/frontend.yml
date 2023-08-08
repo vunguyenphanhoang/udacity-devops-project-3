@@ -10,7 +10,7 @@ Resources:
   WebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub "udapeople-kk1j287dhjppmz1626"
+      BucketName: !Sub "UdaPeople-${ID}"
       AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
