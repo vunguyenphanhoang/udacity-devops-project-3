@@ -211,7 +211,7 @@ jobs:
           name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
-              --template-file .circleci/files/front-end.yml \
+              --template-file .circleci/files/frontend.yml \
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
               --tags project=udapeople
@@ -248,7 +248,6 @@ jobs:
   #     - attach_workspace:
   #         at: ~/
 
-  #     - install_nodejs
   #     - install_ansible
   #     - install_awscli
       
