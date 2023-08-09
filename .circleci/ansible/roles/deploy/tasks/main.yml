@@ -17,7 +17,7 @@
   shell: |
     cd ~/backend-app/dist
 
-    cs ../
+    cd ../
     npm install
 
     npm run build
